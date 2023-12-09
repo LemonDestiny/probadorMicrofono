@@ -11,15 +11,15 @@
     height: 100vh;
     justify-content: center;
     align-items: center;
-    background-color: #023047;
+    background-color: #000814;
 }
 
 
 #boton{
     border-radius: 8px;
     padding: 16px;
-    background-color: #ffb703;
-    color: #023047;
+    background-color: #ffd60a;
+    color: #000814;
     font-size: 16px;
     font-weight: bolder;
     border: none;
