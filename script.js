@@ -1,6 +1,9 @@
 let boton = document.getElementById("boton");
+let botonVideo = document.getElementById("botonCamara");
 let recorder = null;
+let recorderVideo;
 let grabacion = null;
+let contenedor = document.getElementById("video");
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   console.log("getUserMedia supported.");
@@ -11,8 +14,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         audio: true,
       }
     )
-
-    // Success callback
     .then((stream) => {
       recorder = new MediaRecorder(stream);
       recorder.addEventListener("dataavailable", (evento) => {
@@ -25,8 +26,33 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         audio.play();
       });
     })
+    .catch((err) => {
+      console.error(`The following getUserMedia error occurred: ${err}`);
+    });
 
-    // Error callback
+  navigator.mediaDevices
+    .getUserMedia(
+      // constraints - only audio needed for this app
+      {
+        video: true,
+      }
+    )
+    .then((stream) => {
+      recorderVideo = new MediaRecorder(stream);
+      recorderVideo.addEventListener("dataavailable", (evento) => {
+        const video = document.createElement("video");
+        const blob = new Blob([evento.data], {
+          type: "video/mp4",
+        });
+        const videoURL = window.URL.createObjectURL(blob);
+        video.src = videoURL;
+        if (contenedor.firstChild) {
+          contenedor.removeChild(contenedor.firstChild);
+        }
+        contenedor.appendChild(video);
+        video.play();
+      });
+    })
     .catch((err) => {
       console.error(`The following getUserMedia error occurred: ${err}`);
     });
@@ -36,11 +62,24 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
 boton.addEventListener("click", () => {
   if (recorder.state === "recording") {
-    boton.textContent = "Probar microfono"
+    boton.textContent = "Probar microfono";
+    boton.classList.remove("botonPresionado");
     recorder.stop();
   } else {
     recorder.start();
-    boton.textContent = "Detener Grabacion"
-    
+    boton.textContent = "Detener Grabacion";
+    boton.classList.add("botonPresionado");
+  }
+});
+
+botonVideo.addEventListener("click", () => {
+  if (recorderVideo.state === "recording") {
+    botonVideo.textContent = "Probar Cámara";
+    botonVideo.classList.remove("botonPresionado");
+    recorderVideo.stop();
+  } else {
+    recorderVideo.start();
+    botonVideo.textContent = "Detener Grabacion";
+    botonVideo.classList.add("botonPresionado");
   }
 });
